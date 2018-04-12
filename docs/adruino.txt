@@ -1,0 +1,17 @@
+/dev/ttyUSB0
+
+Print to arduinoi screen:
+echo '{PHello Josh}' > /dev/ttyUSB0
+
+Pump Control:
+### = value
+{S###, ###, ###, ###}
+Value 1: Pump 1 start pressure (0 to 99)
+Value 2: Pump 1 stop pressure (0 to 99)
+Value 3: Pump 2 start pressure (0 to 99)
+Value 4: Pump 2 stop pressure (0 to 99)
+Value 5: Calibration (-50 to +50)
+
+Receive Values:
+{R}
+format: ###, ###, ###, ###, ###,

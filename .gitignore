@@ -1,0 +1,12 @@
+*.pyc
+*~
+__pycache__
+venv/
+db.sqlite3
+.DS_Store
+settings_secret.py
+local_settings.py
+local/
+*.ppk
+*/migrations/*
+.idea/
