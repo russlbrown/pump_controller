@@ -27,11 +27,11 @@ def home():
 	settings = parse_pump_settings(read_from_pi())
 	if DEBUG:
 		settings = {
-			'pump1_start_pressure': 1,
-			'pump1_stop_pressure' : 2,
-			'pump2_start_pressure': 3,
-			'pump2_stop_pressure' : 4,
-			'calibration'         : 5,
+			'pump1_start_pressure': '1',
+			'pump1_stop_pressure' : '2',
+			'pump2_start_pressure': '3',
+			'pump2_stop_pressure' : '4',
+			'calibration'         : '5',
 			}
 
 	if request.method == 'POST':
@@ -42,8 +42,10 @@ def home():
 			'pump2_stop_pressure': request.form['pump2_stop_pressure'],
 			'calibration': request.form['calibration'],
 			}
+		write_to_pi(encode_settings(settings))
 		return render_template('home.html', settings=settings)
 	else:
+		settings = parse_pump_settings(read_from_pi())
 		return render_template('home.html', settings=settings)
 
 
@@ -90,6 +92,17 @@ def read_from_pi():
 
 	with open(PI_READ_PATH, mode='r') as file:
 		return file.read()[1:]
+
+
+def encode_settings(settings):
+	return ("{S"
+            + settings['pump1_start_pressure'] + ","
+			+ settings['pump1_stop_pressure'] + ","
+			+ settings['pump2_start_pressure'] + ","
+			+ settings['pump2_stop_pressure'] + ","
+			+ settings['calibration'] + ","
+			+ "}"
+           )
 
 
 def parse_pump_settings(raw_settings):

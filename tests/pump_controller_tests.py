@@ -32,6 +32,19 @@ def test_read_from_pi():
 	assert response == "11,12,13,14,15"
 
 
+def test_encode_pump_settings():
+	settings = {
+		'pump1_start_pressure': '1',
+		'pump1_stop_pressure' : '2',
+		'pump2_start_pressure': '3',
+		'pump2_stop_pressure' : '4',
+		'calibration'         : '5',
+	}
+	encoded = app.encode_settings(settings)
+	print (f"encoded = {encoded}")
+	assert encoded == "{S1,2,3,4,5,}"
+
+
 def test_parse_pump_settings():
 	chaos1 = str(randint(0, 100))
 	chaos2 = str(randint(0, 100))
