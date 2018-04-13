@@ -116,4 +116,4 @@ def parse_pump_settings(raw_settings):
 
 if __name__ == "__main__":
 	app.secret_key = urandom(12)
-	app.run(debug=DEBUG, host='127.0.0.1', port=5000)
+	app.run(debug=DEBUG, host='0.0.0.0', port=80)

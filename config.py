@@ -1,7 +1,7 @@
 from os import name as os_name, path
 
 # SETTINGS
-DEBUG = True
+DEBUG = False
 
 BASE_DIR = path.dirname(__file__)
 PI_WRITE_PATH = "/dev/ttyUSB0"
