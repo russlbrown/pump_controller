@@ -20,13 +20,16 @@ def test_write_to_pi():
 	command = str(randint(1, 1000))
 	app.write_to_pi(command)
 
-	with open(config.PI_PATH, mode='r') as file:
-		assert (file.read() == command)
+	with open(config.PI_WRITE_PATH_DEBUG, mode='r') as file:
+		result = file.read()
+
+	print(f"wrote to {config.PI_WRITE_PATH_DEBUG}")
+	assert result == command
 
 
 def test_read_from_pi():
 	response = app.read_from_pi()
-	assert response == ""
+	assert response == "11,12,13,14,15"
 
 
 def test_parse_pump_settings():

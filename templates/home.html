@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div class="row align-items-center">
+  <div class="col-sm">
+    <h3>History</h3>
+  </div>
+
+  <div class="col-sm">
+    <h3>Current Settings</h3>
+    <p>Pump1 start pressure: {{ settings['pump1_start_pressure'] }}</p>
+    <p>Pump1 stop pressure: {{ settings['pump1_stop_pressure'] }}</p>
+    <p>Pump2 start pressure: {{ settings['pump2_start_pressure'] }}</p>
+    <p>Pump2 stop pressure: {{ settings['pump2_stop_pressure'] }}</p>
+    <p>Calibration: {{ settings['calibration'] }}</p>
+  </div>
+
+  <div class="col-sm">
+    <div class="container">
+      <form action="/home" method="POST">
+        <h3>Change Settings</h3><br>
+        <div class="form-group">
+          <input type="number" class="form-control" name="pump1_start_pressure"
+                 aria-describedby="emailHelp" placeholder="Pump1 start pressure">
+          <small id="numberHelp" class="form-text text-muted">
+            number (0 to 99)
+          </small>
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="pump1_stop_pressure"
+                 aria-describedby="emailHelp" placeholder="Pump1 start pressure">
+          <small id="numberHelp" class="form-text text-muted">
+            number (0 to 99)
+          </small>
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="pump2_start_pressure"
+                 aria-describedby="emailHelp" placeholder="Pump2 start pressure">
+          <small id="numberHelp" class="form-text text-muted">
+            number (0 to 99)
+          </small>
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="pump2_stop_pressure"
+                 aria-describedby="emailHelp" placeholder="Pump2 stop pressure">
+          <small id="numberHelp" class="form-text text-muted">
+            number (0 to 99)
+          </small>
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="calibration"
+                 aria-describedby="emailHelp" placeholder="Calibration">
+          <small id="numberHelp" class="form-text text-muted">
+            number (-50 to 50)
+          </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
