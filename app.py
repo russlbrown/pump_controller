@@ -25,14 +25,6 @@ def home():
 		pass
 
 	settings = parse_pump_settings(read_from_pi())
-	if DEBUG:
-		settings = {
-			'pump1_start_pressure': '1',
-			'pump1_stop_pressure' : '2',
-			'pump2_start_pressure': '3',
-			'pump2_stop_pressure' : '4',
-			'calibration'         : '5',
-			}
 
 	if request.method == 'POST':
 		settings = {
@@ -57,7 +49,7 @@ def do_admin_login():
 			session['logged_in'] = True
 			return redirect('/home')
 		else:
-			flash('wrong password!')
+			return render_template('message.html', message='Wrong password!')
 	else:
 		return render_template('login.html')
 
@@ -73,7 +65,6 @@ def write_to_pi(command):
 	"""Send 'command' to the orange pi."""
 
 	with open(PI_WRITE_PATH, mode='w') as file:
-		file.truncate()
 		file.write(command)
 
 
@@ -129,4 +120,5 @@ def parse_pump_settings(raw_settings):
 
 if __name__ == "__main__":
 	app.secret_key = urandom(12)
+	#app.run(debug=DEBUG, host='127.0.0.1', port=5000)
 	app.run(debug=DEBUG, host='0.0.0.0', port=80)
