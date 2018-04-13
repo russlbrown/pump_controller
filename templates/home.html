@@ -1,62 +1,90 @@
 {% extends 'base.html' %}
 {% block body %}
 
-<div class="row align-items-center">
-  <div class="col-sm">
-    <h3>History</h3>
-  </div>
+<div class="container">
+  <div class="row">
 
-  <div class="col-sm">
-    <h3>Current Settings</h3>
-    <p>Pump1 start pressure: {{ settings['pump1_start_pressure'] }}</p>
-    <p>Pump1 stop pressure: {{ settings['pump1_stop_pressure'] }}</p>
-    <p>Pump2 start pressure: {{ settings['pump2_start_pressure'] }}</p>
-    <p>Pump2 stop pressure: {{ settings['pump2_stop_pressure'] }}</p>
-    <p>Calibration: {{ settings['calibration'] }}</p>
-  </div>
 
-  <div class="col-sm">
-    <div class="container">
-      <form action="/home" method="POST">
-        <h3>Change Settings</h3><br>
-        <div class="form-group">
-          <input type="number" class="form-control" name="pump1_start_pressure"
-                 aria-describedby="emailHelp" placeholder="Pump1 start pressure">
-          <small id="numberHelp" class="form-text text-muted">
-            number (0 to 99)
-          </small>
-        </div>
-        <div class="form-group">
-          <input type="number" class="form-control" name="pump1_stop_pressure"
-                 aria-describedby="emailHelp" placeholder="Pump1 start pressure">
-          <small id="numberHelp" class="form-text text-muted">
-            number (0 to 99)
-          </small>
-        </div>
-        <div class="form-group">
-          <input type="number" class="form-control" name="pump2_start_pressure"
-                 aria-describedby="emailHelp" placeholder="Pump2 start pressure">
-          <small id="numberHelp" class="form-text text-muted">
-            number (0 to 99)
-          </small>
-        </div>
-        <div class="form-group">
-          <input type="number" class="form-control" name="pump2_stop_pressure"
-                 aria-describedby="emailHelp" placeholder="Pump2 stop pressure">
-          <small id="numberHelp" class="form-text text-muted">
-            number (0 to 99)
-          </small>
-        </div>
-        <div class="form-group">
-          <input type="number" class="form-control" name="calibration"
-                 aria-describedby="emailHelp" placeholder="Calibration">
-          <small id="numberHelp" class="form-text text-muted">
-            number (-50 to 50)
-          </small>
-        </div>
+    <!--
+    <div class="col-md-6">
+      <h3>Current Settings</h3>
+      <p>Pump1 start pressure: {{ settings['pump1_start_pressure'] }}</p>
+      <p>Pump1 stop pressure: {{ settings['pump1_stop_pressure'] }}</p>
+      <p>Pump2 start pressure: {{ settings['pump2_start_pressure'] }}</p>
+      <p>Pump2 stop pressure: {{ settings['pump2_stop_pressure'] }}</p>
+      <p>Calibration: {{ settings['calibration'] }}</p>
+    </div>
+    -->
 
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+
+
+    <div class="col-md-5">
+
+        <form action="/home" method="POST">
+          <h3>Settings</h3>
+
+          <div class="form-group">
+            <label for="number">Pump1 start pressure (0 to 99)</label>
+            <input type="number" class="form-control" name="pump1_start_pressure"
+                   aria-describedby="emailHelp" placeholder="Pump1 start pressure (0 to 99)"
+                   value="{{ settings['pump1_start_pressure'] }}"
+                   onfocus="this.style.color='#FF0000'; this.style.fontWeight='bold'"
+            >
+
+          </div>
+
+          <div class="form-group">
+            <label for="number">Pump1 stop pressure (0 to 99)</label>
+            <input type="number" class="form-control" name="pump1_stop_pressure"
+                   aria-describedby="emailHelp" placeholder="Pump1 stop pressure (0 to 99)"
+                   value="{{ settings['pump1_stop_pressure'] }}"
+                   onfocus="this.style.color='#FF0000'; this.style.fontWeight='bold'"
+            >
+
+          </div>
+
+          <div class="form-group">
+            <label for="number">Pump2 start pressure (0 to 99)</label>
+            <input type="number" class="form-control" name="pump2_start_pressure"
+                   aria-describedby="emailHelp" placeholder="Pump2 start pressure (0 to 99)"
+                   value="{{ settings['pump2_start_pressure'] }}"
+                   onfocus="this.style.color='#FF0000'; this.style.fontWeight='bold'"
+            >
+
+          </div>
+
+          <div class="form-group">
+            <label for="number">Pump2 stop pressure (0 to 99)</label>
+            <input type="number" class="form-control" name="pump2_stop_pressure"
+                   aria-describedby="emailHelp" placeholder="Pump2 stop pressure (0 to 99)"
+                   value="{{ settings['pump2_stop_pressure'] }}"
+                   onfocus="this.style.color='#FF0000'; this.style.fontWeight='bold'"
+            >
+
+          </div>
+
+          <div class="form-group">
+            <label for="number">Calibration (-50 to 50)</label>
+            <input type="number" class="form-control" name="calibration"
+                   aria-describedby="emailHelp" placeholder="Calibration (-50 to 50)"
+                   value="{{ settings['calibration'] }}"
+                   onfocus="this.style.color='#FF0000'; this.style.fontWeight='bold'"
+
+            >
+            <!--<small id="numberHelp" class="form-text text-muted">
+              number (-50 to 50)
+            </small>-->
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <br><br>
+        </form>
+      </div>
+
+
+
+    <div class="col-md-7">
+      <h3>History</h3>
     </div>
   </div>
 </div>

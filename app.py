@@ -14,7 +14,7 @@ def index():
 	if not session.get('logged_in'):
 		return redirect('/login')
 	else:
-		return render_template('home.html')
+		return redirect('/home')
 
 
 @app.route('/home', methods=['POST', 'GET'])
@@ -23,8 +23,6 @@ def home():
 		return redirect('/login')
 	else:
 		pass
-
-	settings = parse_pump_settings(read_from_pi())
 
 	if request.method == 'POST':
 		settings = {
@@ -120,5 +118,7 @@ def parse_pump_settings(raw_settings):
 
 if __name__ == "__main__":
 	app.secret_key = urandom(12)
-	#app.run(debug=DEBUG, host='127.0.0.1', port=5000)
-	app.run(debug=DEBUG, host='0.0.0.0', port=80)
+	if os_name == 'nt':
+		app.run(debug=DEBUG, host='127.0.0.1', port=5000)
+	else:
+		app.run(debug=DEBUG, host='0.0.0.0', port=80)

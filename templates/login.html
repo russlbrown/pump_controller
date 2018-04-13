@@ -3,7 +3,10 @@
 {% block body %}
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 {% if session['logged_in'] %}
-<p>You're logged in already!</p>
+<div class="alert alert-info" role="alert">
+  <strong>You're logged in already!</strong>
+</div>
+
 {% else %}
 
 
