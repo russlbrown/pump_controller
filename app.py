@@ -14,39 +14,33 @@ app = Flask(__name__)
 
 class PressureHistory(object):
 	def __init__(self):
-		self.timestamps = []
-		self.values = []
-		with FileReadBackwards(PRESSURE_HISTORY_PATH, encoding="utf-8") as frb:
+		self.readings = []
+		with FileReadBackwards(PRESSURE_HISTORY_PATH, encoding="ASCII") as frb:
 			# getting lines by lines starting from the last line up
 			for reading in frb:
 				columns = reading.split(',')
-				self.timestamps.append(datetime(int(columns[0]),
+				self.readings.append((datetime(int(columns[0]),
 	                                           int(columns[1]),
 	                                           int(columns[2]),
 	                                           int(columns[3]),
 	                                           int(columns[4]),
-	                                           int(columns[5])))
-
-				self.values.append(int(columns[6]))
+	                                           int(columns[5])),
+										  int(columns[6])))
 
 				# Check if reading is older than 7 days. Stop reading from file
 				# if it is.
 				date_diff = (datetime.now()
-				             - self.timestamps[-1]).days
+				             - self.readings[-1][0]).days
 				if date_diff > 7:
-					self.timestamps = self.timestamps[:-1]
-					self.values = self.values[:-1]
+					self.readings = self.readings[:-1]
 					break
 				else:
 					pass # continue collecting data
 
 	def make_chart(self):
-		line_chart = pygal.Line(x_label_rotation=30)
-		line_chart.title = 'Water Pressure'
-		line_chart.x_labels = map(lambda d: d.strftime('%Y-%m-%d'),
-		                          self.timestamps)
-		line_chart.add('Pressure [psi]',
-		               self.values)
+		line_chart = pygal.DateTimeLine(x_label_rotation=35, truncate_label=-1,
+            x_value_formatter=lambda dt: dt.strftime('%d, %b %Y at %I:%M:%S %p'))
+		line_chart.add('Pressure [psi]', self.readings)
 		#line_chart.render_to_file(CHART_PATH)
 		return line_chart.render_data_uri()
 

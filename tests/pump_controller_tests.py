@@ -29,7 +29,7 @@ def test_write_to_pi():
 
 def test_read_from_pi():
 	response = app.read_from_pi()
-	assert response == "11,12,13,14,15"
+	assert response == "11,12,13,14,15,"
 
 
 def test_encode_pump_settings():
