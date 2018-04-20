@@ -33,7 +33,6 @@ class PressureHistory(object):
 				# if it is.
 				date_diff = (datetime.now()
 				             - self.timestamps[-1]).days
-				print(f"Datediff: {date_diff} type: {type(date_diff)}")
 				if date_diff > 7:
 					self.timestamps = self.timestamps[:-1]
 					self.values = self.values[:-1]
