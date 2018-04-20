@@ -10,3 +10,4 @@ local/
 *.ppk
 */migrations/*
 .idea/
+history.csv

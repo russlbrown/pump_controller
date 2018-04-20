@@ -1,12 +1,55 @@
 from flask import Flask
 from flask import flash, redirect, render_template, request, session, abort
 from config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH, PASSWORD
-from config import PI_WRITE_PATH
+from config import PI_WRITE_PATH, CHART_PATH, PRESSURE_HISTORY_PATH
 from time import sleep
 from os import name as os_name, urandom
-
+import csv
+from file_read_backwards import FileReadBackwards
+from datetime import datetime
+import pygal
 
 app = Flask(__name__)
+
+
+class PressureHistory(object):
+	def __init__(self):
+		self.timestamps = []
+		self.values = []
+		with FileReadBackwards(PRESSURE_HISTORY_PATH, encoding="utf-8") as frb:
+			# getting lines by lines starting from the last line up
+			for reading in frb:
+				columns = reading.split(',')
+				self.timestamps.append(datetime(int(columns[0]),
+	                                           int(columns[1]),
+	                                           int(columns[2]),
+	                                           int(columns[3]),
+	                                           int(columns[4]),
+	                                           int(columns[5])))
+
+				self.values.append(int(columns[6]))
+
+				# Check if reading is older than 7 days. Stop reading from file
+				# if it is.
+				date_diff = (datetime.now()
+				             - self.timestamps[-1]).days
+				print(f"Datediff: {date_diff} type: {type(date_diff)}")
+				if date_diff > 7:
+					self.timestamps = self.timestamps[:-1]
+					self.values = self.values[:-1]
+					break
+				else:
+					pass # continue collecting data
+
+	def make_chart(self):
+		line_chart = pygal.Line(x_label_rotation=30)
+		line_chart.title = 'Water Pressure'
+		line_chart.x_labels = map(lambda d: d.strftime('%Y-%m-%d'),
+		                          self.timestamps)
+		line_chart.add('Pressure [psi]',
+		               self.values)
+		#line_chart.render_to_file(CHART_PATH)
+		return line_chart.render_data_uri()
 
 
 @app.route('/')
@@ -33,10 +76,12 @@ def home():
 			'calibration': request.form['calibration'],
 			}
 		write_to_pi(encode_settings(settings))
-		return render_template('home.html', settings=settings)
+		return redirect('/home')
 	else:
 		settings = parse_pump_settings(read_from_pi())
-		return render_template('home.html', settings=settings)
+		pressure_history = PressureHistory()
+		chart = pressure_history.make_chart()
+		return render_template('home.html', settings=settings, chart=chart)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -80,7 +125,7 @@ def read_from_pi():
 	sleep(DELAY)
 
 	with open(PI_READ_PATH, mode='r') as file:
-		return file.read()[1:]
+		return file.read()
 
 
 def encode_settings(settings):

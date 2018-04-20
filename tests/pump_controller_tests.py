@@ -60,3 +60,9 @@ def test_parse_pump_settings():
 	assert parsed['pump2_stop_pressure'] == chaos4
 	assert parsed['calibration'] == chaos5
 
+
+def test_PressureHistory_init():
+	pressure_history = app.PressureHistory()
+	for value in pressure_history.values:
+		print (value)
+
