@@ -1,14 +1,38 @@
 from flask import Flask
-from flask import flash, redirect, render_template, request, session, abort
+from flask import redirect, render_template, request, session
 from config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH, PASSWORD
 from config import PI_WRITE_PATH, CHART_PATH, PRESSURE_HISTORY_PATH
 from time import sleep
-from os import name as os_name, urandom
-import csv
+import os
 from file_read_backwards import FileReadBackwards
 from datetime import datetime
 import pygal
+import logging.config
+import yaml
 
+
+# Setup Logging
+def setup_logging(
+    default_path='logging.yaml',
+    default_level=logging.INFO,
+    env_key='LOG_CFG'
+):
+    """Setup logging configuration
+
+    """
+    path = default_path
+    value = os.getenv(env_key, None)
+    if value:
+        path = value
+    if os.path.exists(path):
+        with open(path, 'rt') as f:
+            config = yaml.safe_load(f.read())
+        logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=default_level)
+
+
+setup_logging()
 app = Flask(__name__)
 
 
@@ -155,8 +179,8 @@ def parse_pump_settings(raw_settings):
 
 
 if __name__ == "__main__":
-	app.secret_key = urandom(12)
-	if os_name == 'nt':
+	app.secret_key = os.urandom(12)
+	if os.name == 'nt':
 		app.run(debug=DEBUG, host='127.0.0.1', port=5000)
 	else:
 		app.run(debug=DEBUG, host='0.0.0.0', port=80)

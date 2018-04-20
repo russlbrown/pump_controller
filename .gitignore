@@ -11,3 +11,4 @@ local/
 */migrations/*
 .idea/
 history.csv
+*.log
