@@ -13,23 +13,23 @@ import yaml
 
 # Setup Logging
 def setup_logging(
-    default_path='logging.yaml',
-    default_level=logging.INFO,
-    env_key='LOG_CFG'
+		default_path='logging.yaml',
+		default_level=logging.INFO,
+		env_key='LOG_CFG'
 ):
-    """Setup logging configuration
+	"""Setup logging configuration
 
     """
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            config = yaml.safe_load(f.read())
-        logging.config.dictConfig(config)
-    else:
-        logging.basicConfig(level=default_level)
+	path = default_path
+	value = os.getenv(env_key, None)
+	if value:
+		path = value
+	if os.path.exists(path):
+		with open(path, 'rt') as f:
+			config = yaml.safe_load(f.read())
+		logging.config.dictConfig(config)
+	else:
+		logging.basicConfig(level=default_level)
 
 
 setup_logging()
@@ -37,6 +37,11 @@ app = Flask(__name__)
 
 
 class PressureHistory(object):
+	"""Create an object that stores pressure history data and generates charts
+
+	with the make_chart method.
+	"""
+
 	def __init__(self):
 		self.readings = []
 		with FileReadBackwards(PRESSURE_HISTORY_PATH, encoding="ASCII") as frb:
@@ -44,12 +49,12 @@ class PressureHistory(object):
 			for reading in frb:
 				columns = reading.split(',')
 				self.readings.append((datetime(int(columns[0]),
-	                                           int(columns[1]),
-	                                           int(columns[2]),
-	                                           int(columns[3]),
-	                                           int(columns[4]),
-	                                           int(columns[5])),
-										  int(columns[6])))
+				                               int(columns[1]),
+				                               int(columns[2]),
+				                               int(columns[3]),
+				                               int(columns[4]),
+				                               int(columns[5])),
+				                      int(columns[6])))
 
 				# Check if reading is older than 7 days. Stop reading from file
 				# if it is.
@@ -59,13 +64,16 @@ class PressureHistory(object):
 					self.readings = self.readings[:-1]
 					break
 				else:
-					pass # continue collecting data
+					pass  # continue collecting data
 
 	def make_chart(self):
+		# '%d, %b %Y at %I:%M:%S %p' == '01, Jan, 1970 st 12:00:00 AM'
 		line_chart = pygal.DateTimeLine(x_label_rotation=35, truncate_label=-1,
-            x_value_formatter=lambda dt: dt.strftime('%d, %b %Y at %I:%M:%S %p'))
+		                                x_value_formatter=lambda
+			                                dt: dt.strftime(
+			                                '%Y-%m-%d at %I:%M %p'))
 		line_chart.add('Pressure [psi]', self.readings)
-		#line_chart.render_to_file(CHART_PATH)
+		# line_chart.render_to_file(CHART_PATH)
 		return line_chart.render_data_uri()
 
 
@@ -87,11 +95,11 @@ def home():
 	if request.method == 'POST':
 		settings = {
 			'pump1_start_pressure': request.form['pump1_start_pressure'],
-			'pump1_stop_pressure': request.form['pump1_stop_pressure'],
+			'pump1_stop_pressure' : request.form['pump1_stop_pressure'],
 			'pump2_start_pressure': request.form['pump2_start_pressure'],
-			'pump2_stop_pressure': request.form['pump2_stop_pressure'],
-			'calibration': request.form['calibration'],
-			}
+			'pump2_stop_pressure' : request.form['pump2_stop_pressure'],
+			'calibration'         : request.form['calibration'],
+		}
 		write_to_pi(encode_settings(settings))
 		return redirect('/home')
 	else:
@@ -133,7 +141,7 @@ def read_from_pi():
 
 	returns pump_settings dictionary"""
 
-	#with open(PI_READ_PATH, mode='w') as file:
+	# with open(PI_READ_PATH, mode='w') as file:
 	#	file.truncate()
 
 	with open(PI_WRITE_PATH, mode='w') as file:
@@ -147,13 +155,13 @@ def read_from_pi():
 
 def encode_settings(settings):
 	return ("{S"
-            + settings['pump1_start_pressure'] + ","
-			+ settings['pump1_stop_pressure'] + ","
-			+ settings['pump2_start_pressure'] + ","
-			+ settings['pump2_stop_pressure'] + ","
-			+ settings['calibration'] + ","
-			+ "}"
-           )
+	        + settings['pump1_start_pressure'] + ","
+	        + settings['pump1_stop_pressure'] + ","
+	        + settings['pump2_start_pressure'] + ","
+	        + settings['pump2_stop_pressure'] + ","
+	        + settings['calibration'] + ","
+	        + "}"
+	        )
 
 
 def parse_pump_settings(raw_settings):
@@ -171,10 +179,10 @@ def parse_pump_settings(raw_settings):
 	settings = raw_settings.split(',')
 	return {
 		'pump1_start_pressure': settings[0],  # (0 to 99)
-		'pump1_stop_pressure':  settings[1],  # (0 to 99)
-	    'pump2_start_pressure': settings[2],  # (0 to 99)
-	    'pump2_stop_pressure':  settings[3],  # (0 to 99)
-	    'calibration':          settings[4],  # (-50 to 50)
+		'pump1_stop_pressure' : settings[1],  # (0 to 99)
+		'pump2_start_pressure': settings[2],  # (0 to 99)
+		'pump2_stop_pressure' : settings[3],  # (0 to 99)
+		'calibration'         : settings[4],  # (-50 to 50)
 	}
 
 
