@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import redirect, render_template, request, session
-from config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH, PASSWORD
+from config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH
 from config import PI_WRITE_PATH, CHART_PATH, PRESSURE_HISTORY_PATH
 from time import sleep
 import os
@@ -35,33 +35,82 @@ def setup_logging(
 setup_logging()
 app = Flask(__name__)
 
+PASSWORD = open(PASSWORD_PATH).read()
+
 
 class PressureHistory(object):
 	"""Create an object that stores pressure history data and generates charts
 
 	with the make_chart method.
 	"""
-
 	def __init__(self):
-		self.readings = []
+		self.load_data()
+
+	def load_data(self):
+		self.readings_avg = []
+		self.readings_high = []
+		self.readings_low = []
+		hour_old = 100
+
 		with FileReadBackwards(PRESSURE_HISTORY_PATH, encoding="ASCII") as frb:
+
 			# getting lines by lines starting from the last line up
 			for reading in frb:
 				columns = reading.split(',')
-				self.readings.append((datetime(int(columns[0]),
-				                               int(columns[1]),
-				                               int(columns[2]),
-				                               int(columns[3]),
-				                               int(columns[4]),
-				                               int(columns[5])),
-				                      int(columns[6])))
+				timestamp = datetime(int(columns[0]),
+	                                 int(columns[1]),
+	                                 int(columns[2]),
+	                                 int(columns[3]),
+	                                 int(columns[4]),
+	                                 int(columns[5]))
+				value = int(columns[6])
+
+				# initialize variables when reading first value
+				if hour_old == 100:
+					hour_old = timestamp.hour
+					timestamp_old = timestamp
+					num_of_readings = 0
+					readings_in_hour = []
+					reading_high = 0
+					reading_low = 1000
+
+				# If hour of current reading is different from hour of previous
+				# save values for previous hour
+				# save timestamp to timestamp_old
+				# reset variables
+				if timestamp.hour != hour_old:
+					self.readings_avg.append((timestamp_old,
+					    sum(readings_in_hour)/len(readings_in_hour)))
+					self.readings_high.append((timestamp_old, reading_high))
+					self.readings_low.append((timestamp_old, reading_low))
+
+					timestamp_old = timestamp
+					hour_old = timestamp.hour
+					num_of_readings = 0
+					readings_in_hour = []
+					reading_high = 0
+					reading_low = 1000
+				else:
+					pass
+
+				# update max and min value
+				if value > reading_high:
+					reading_high = value
+				else:
+					pass
+
+				if value < reading_low:
+					reading_low = value
+				else:
+					pass
+
+				readings_in_hour.append(value)
 
 				# Check if reading is older than 7 days. Stop reading from file
 				# if it is.
-				date_diff = (datetime.now()
-				             - self.readings[-1][0]).days
+				date_diff = (datetime.now() - timestamp).days
 				if date_diff > 7:
-					self.readings = self.readings[:-1]
+					#self.readings = self.readings[:-1]
 					break
 				else:
 					pass  # continue collecting data
@@ -72,7 +121,10 @@ class PressureHistory(object):
 		                                x_value_formatter=lambda
 			                                dt: dt.strftime(
 			                                '%Y-%m-%d at %I:%M %p'))
-		line_chart.add('Pressure [psi]', self.readings)
+
+		line_chart.add('Highs [psi]', self.readings_high)
+		line_chart.add('Average [psi]', self.readings_avg)
+		line_chart.add('Lows [psi]', self.readings_low)
 		# line_chart.render_to_file(CHART_PATH)
 		return line_chart.render_data_uri()
 
@@ -107,6 +159,30 @@ def home():
 		pressure_history = PressureHistory()
 		chart = pressure_history.make_chart()
 		return render_template('home.html', settings=settings, chart=chart)
+
+
+@app.route('/change_password', methods=['POST', 'GET'])
+def change_password():
+	global PASSWORD
+	if request.method == 'POST':
+		if (request.form['old_password'] == PASSWORD
+			and session.get('logged_in')
+			and (request.form['new_password']
+			     == request.form['confirm_password'])):
+			# save the new password
+			with open(PASSWORD_PATH, 'w') as file:
+				file.truncate()
+				file.write(request.form['new_password'])
+				PASSWORD = request.form['new_password']
+			#
+			return render_template('message.html',
+			    message='Your password has been changed successfully.')
+		else:
+			return render_template('message.html',
+			    message='Error: Your password could not be changed.')
+	else:
+		return render_template('change_password.html')
+
 
 
 @app.route('/login', methods=['GET', 'POST'])

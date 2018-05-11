@@ -9,7 +9,7 @@ PI_READ_PATH = "/var/www/serialBuffer"
 PI_WRITE_PATH_DEBUG = path.join(BASE_DIR, "pi_write_path_debug.txt")
 PI_READ_PATH_DEBUG = path.join(BASE_DIR, "pi_read_path_debug.txt")
 PASSWORD_PATH = path.join(path.join(BASE_DIR, "local"), "password.txt")
-PASSWORD = open(PASSWORD_PATH).read()
+
 PRESSURE_HISTORY_PATH = "/var/www/history.csv"
 CHART_PATH = path.join(path.join(BASE_DIR, "static"), "pressure_chart.svg")
 
