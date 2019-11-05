@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import redirect, render_template, request, session
-from config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH
-from config import PI_WRITE_PATH, CHART_PATH, PRESSURE_HISTORY_PATH
+from .config import PI_READ_PATH, DEBUG, DELAY, PASSWORD_PATH
+from .config import PI_WRITE_PATH, CHART_PATH, PRESSURE_HISTORY_PATH
 from time import sleep
 import os
 from file_read_backwards import FileReadBackwards
@@ -34,6 +34,7 @@ def setup_logging(
 
 setup_logging()
 app = Flask(__name__)
+app.secret_key = os.urandom(12)
 
 PASSWORD = open(PASSWORD_PATH).read()
 
@@ -263,7 +264,7 @@ def parse_pump_settings(raw_settings):
 
 
 if __name__ == "__main__":
-	app.secret_key = os.urandom(12)
+	
 	if os.name == 'nt':
 		app.run(debug=DEBUG, host='127.0.0.1', port=5000)
 	else:

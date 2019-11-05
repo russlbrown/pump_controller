@@ -12,3 +12,4 @@ local/
 .idea/
 history.csv
 *.log
+.env
