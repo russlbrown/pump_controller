@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+flask = "*"
+click = "*"
+file-read-backwards = "*"
+itsdangerous = "*"
+jinja2 = "*"
+markupsafe = "*"
+nose = "*"
+pygal = "*"
+werkzeug = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "3.7"
